@@ -1,5 +1,6 @@
-CREATE TABLE IF NOT EXISTS dynamic_stats (
+CREATE TABLE IF NOT EXISTS dynamic_statss (
 	player_name	TEXT,
+	player_display_name TEXT,
 	player_id	INTEGER,
     character_name	TEXT,
 	current_hunger	INTEGER,

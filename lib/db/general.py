@@ -29,10 +29,14 @@ def query_player(playerID, guildID, table_name=default_table):
 
 
 def column_to_text(column_name):
-    if column_name == 'current_hunger':
-        return 'Hunger'
+    if type(column_name) == str:
+        if column_name == 'current_hunger':
+            return 'Hunger'
+        else:
+            return capwords(column_name.replace('_', ' '))
     else:
-        return capwords(column_name.replace('_', ' '))
+        results = [capwords(y.replace('_', ' ')) for y in column_name]
+        return results
 
 
 def basic_listifier(item):

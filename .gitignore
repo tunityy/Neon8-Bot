@@ -1,0 +1,7 @@
+*.db
+*.db-journal
+__pycache__
+*.pyc
+lib/bot/token.0
+lib/cogs/char_commands.py
+other/

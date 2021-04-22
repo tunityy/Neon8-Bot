@@ -1,8 +1,7 @@
 from lib.bot import bot
 
-"""April 13, 2021"""
+"""April 21, 2021"""
 
-
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 bot.run(VERSION)

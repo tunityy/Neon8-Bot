@@ -1,4 +1,4 @@
-from lib.db.db import query_player, player_info, register, register_variable
+from lib.db.db import query_user, player_info, register, register_variable#, query_player
 from lib.db.db import stats_lookup, stats_lookup_list_all, name_lookup
 from lib.db.db import stat_name_ifs, column_to_text, stat_names_listifier
 from lib.db.db import update_stats, basic_listifier, update_character_name
@@ -11,7 +11,8 @@ from discord.ext import commands
 from discord.ext.commands import Cog, command
 from datetime import datetime
 
-# TODO: Break this monster into multiple cogs, I think
+# TODO: Total overhaul of this cog, and all the associated functions. Working on it! :)
+
 
 class Stats(Cog):
     def __init__(self, client):
@@ -35,9 +36,9 @@ class Stats(Cog):
 
     ### REGISTER PLAYER ###
 
-    @command(aliases = ['reg_basic', 'regplayer', 'regbasic', 'basicplayer', 'basicnew', 'basic', 'newbasic'])
+    @command(aliases = ['reg_basic', 'regplayer', 'regbasic', 'basicplayer', 'basicnew', 'newbasic'])
     async def register_player(self, ctx, character_name=False):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is not None:
             await ctx.send("Player is already registered in database.")
 
@@ -48,39 +49,39 @@ class Stats(Cog):
 \nNo character stats have been added yet. Please use `.update` or `.set` to enter your stats.""")
 
 
-    @command(aliases = ['reg_full', 'regfull', 'fullreg', 'register', 'registerfull', 'newplayer', 'fullnew', 'newfull', 'reg'])
-    async def register_full(self, ctx):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
-        if my_result is not None:
-            await ctx.send("Player is already registered in database.")
+#     @command(aliases = ['reg_full', 'regfull', 'fullreg', 'register', 'registerfull', 'newplayer', 'fullnew', 'newfull', 'reg'])
+#     async def register_full(self, ctx):
+#         my_result = query_user(ctx.author.id, ctx.guild.id)
+#         if my_result is not None:
+#             await ctx.send("Player is already registered in database.")
 
-        elif my_result is None:
-            await ctx.send("""Registering new character. Please provide, without brackets:\n
-(current hunger), (current humanity), (stains), (current willpower), (total willpower)""")
-            ### Though character isn't referenced here, you can enter a separate character name
+#         elif my_result is None:
+#             await ctx.send("""Registering new character. Please provide, without brackets:\n
+# (current hunger), (current humanity), (stains), (current willpower), (total willpower)""")
+#             ### Though character isn't referenced here, you can enter a separate character name
 
-            def check(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel
-            msg = await self.client.wait_for("message", check=check)
+#             def check(msg):
+#                 return msg.author == ctx.author and msg.channel == ctx.channel
+#             msg = await self.client.wait_for("message", check=check)
 
-            # char_info = list(str(msg.content).replace(' ', ', ').split(', '))
-            char_info = basic_listifier(msg.content)
+#             # char_info = list(str(msg.content).replace(' ', ', ').split(', '))
+#             char_info = basic_listifier(msg.content)
 
-            if len(char_info) != 5 and len(char_info) != 6:
-                await ctx.send("Incorrect number of values entered!")
-            else:
-                if len(char_info) == 5:
-                    character_name = False
-                    char_stats = char_info
-                elif len(char_info) == 6:
-                    character_name = char_info[0]
-                    char_stats = char_info[1:6]
+#             if len(char_info) != 5 and len(char_info) != 6:
+#                 await ctx.send("Incorrect number of values entered!")
+#             else:
+#                 if len(char_info) == 5:
+#                     character_name = False
+#                     char_stats = char_info
+#                 elif len(char_info) == 6:
+#                     character_name = char_info[0]
+#                     char_stats = char_info[1:6] 
 
-                my_info = player_info(ctx.author, ctx.author.display_name, ctx.author.id, ctx.author.guild.id)
-                register(my_info, character_name, True, char_stats)
+#                 my_info = player_info(ctx.author, ctx.author.display_name, ctx.author.id, ctx.author.guild.id)
+#                 register(my_info, character_name, True, char_stats)
             
-                print(f"\nEntry for {msg.author.display_name}'s new character has been created.")
-                await ctx.send(f"Character information for {msg.author.display_name} has been saved to database.")
+#                 print(f"\nEntry for {msg.author.display_name}'s new character has been created.")
+#                 await ctx.send(f"Character information for {msg.author.display_name} has been saved to database.")
 
     # ----------------------------------------------------------
 
@@ -90,7 +91,7 @@ class Stats(Cog):
     @command(aliases=['showme', 'look', 'show'])
     async def show_me(self, ctx, *args):
         print(args)
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is None:
             await ctx.send("Player is not registered in database!")
         elif my_result is not None and len(my_result) > 1:
@@ -123,7 +124,7 @@ class Stats(Cog):
 
     @command(aliases=['showone', 'showyou', 'lookone', 'look_one', 'show_other', 'showother'])
     async def show_one(self, ctx, member: Member, *args):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is None:
             await ctx.send(f"{member.display_name} could not be found in the database. :(")
         elif my_result is not None and len(my_result) > 1:
@@ -206,10 +207,20 @@ class Stats(Cog):
     # ----------------------------------------------------------
 
     ### Update/Set My / One / All ###
+    # TODO: Make a command to set someone else's stats
 
     @command(aliases=['set', 'setmy', 'set_my', 'updatemy', 'update_my'])
     async def update(self, ctx, *args):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
+
+        print("\n----- Start -----")
+        my_info = player_info(ctx.author, ctx.author.display_name, ctx.author.id, ctx.author.guild.id)
+        print(my_info)
+        print(type(my_info))
+        print(ctx.author)
+        print(f"{ctx.author}")
+        print(type(ctx.author))
+        print()
 
         if my_result is not None and len(my_result) > 1:
             await ctx.send(f"""Woops! It looks like you have more than one profile registered. You'll have to be more specific. 
@@ -252,20 +263,36 @@ These are the stats that are currently implemented in the database:
 
                     before = stats_lookup(ctx.author.id, ctx.author.guild.id, lookup_input)
                     after = update_stats(ctx.author.id, ctx.author.guild.id, args)
+                    
+                    print("\nArgs")
+                    print(args)
+                    print(type(args))
+                    print(f"Lookup input: {lookup_input}/, type: {type(lookup_input)}")
+                    print(f"Lookup input 0: {lookup_input[0]}/, type: {type(lookup_input[0])}")
+                    print()
+                    print(before)
+                    print(after)
+                    print()
+                    
 
                     if len(after[1]) == 1:
                         await ctx.send(f"Updated {column_to_text(lookup_input[0])} from {before[1][0]} to {after[1][0]}.")
+                        print("column_to_text stuff")
+                        print(column_to_text(lookup_input[0]))
                     else:
                         combined_results = list(map(lambda x, y, z: (x, y, z), basic_listifier([column_to_text(i) for i in lookup_input]), before[1], after[1]))
                         final_output = '\n'.join([f"Updated {item[0]} from {item[1]} to {item[2]}." for item in combined_results])                    
                         await ctx.send(f"{final_output}")
+                        print(combined_results)
+                        print(final_output)
                         # TODO: pretty up the message
+                    print("----- End -----\n")
 
 
 
     @command(aliases=['change_name', 'updatename', 'changename', 'rename', 'setname', 'set_name'])
     async def update_name(self, ctx, *args):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is None:
             await ctx.send(f"{ctx.author.display_name} could not be found in the database. :(")
             
@@ -286,7 +313,7 @@ These are the stats that are currently implemented in the database:
     # TODO: make this have an actual output of some kind in discord, lmao
     @command(aliases=['setall', 'updateall', 'set_all'])
     async def update_all(self, ctx, *args):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is None:
             # TODO: make this prompt the user to add all their info and register
             await ctx.send("Player is not registered in database.")
@@ -332,7 +359,7 @@ Total Willpower: {after_numbs[4]} (was {before_numbs[4]})
 
     @command(aliases=['plus', 'increase'])
     async def add(self, ctx, *args):
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is None:
             await ctx.send("Player is not registered in database!")
 
@@ -386,7 +413,7 @@ clear table
     @clear.command(name='my', aliases=['me'])
     async def clear_my(self, ctx, *args):
         # clears the stat for all your characters, or just one
-        my_result = query_player(ctx.author.id, ctx.guild.id)
+        my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is None:
             await ctx.send("Player is not registered in database!")
 
@@ -426,7 +453,7 @@ clear table
 
     @clear.command(name='one', aliases=['other'])
     async def clear_one(self, ctx, member: Member, *args):
-        search_res = query_player(ctx.author.id, ctx.guild.id)
+        search_res = query_user(ctx.author.id, ctx.guild.id)
         if search_res is None:
             await ctx.send(f"{member.display_name} could not be found in the database. :(")
 

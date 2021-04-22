@@ -4,14 +4,17 @@ from string import capwords
 from discord import Embed, Member
 
 from . register_lookup import stat_name_ifs, stat_names_listifier, stats_lookup, stats_lookup_list_all
-from . general import basic_listifier
+from . small_functions import basic_listifier
+
+'''I'm working to remake a bunch of functions and take these out of commission'''
+
 
 DB_PATH = "./data/db/database.db"
-default_table = 'dynamic_stats'
+default_table = 'dynamic_statss'
 
 
 
-def update_stats(playerID, guildID, raw_input, update_all=False, char_name=False, table_name=default_table):
+def update_stats(playerID, guildID, rawinput, update_all=False, char_name=False, table_name=default_table):
     """Update your stats! :)"""
     cxn = sqlite3.connect(DB_PATH)
     cur = cxn.cursor()
@@ -19,11 +22,11 @@ def update_stats(playerID, guildID, raw_input, update_all=False, char_name=False
     if update_all == True:
         column_title_str = 'current_hunger, humanity, stains, current_willpower, total_willpower'
         columns_Qs = 'current_hunger=?, humanity=?, stains=?, current_willpower=?, total_willpower=?'
-        stat_vals = basic_listifier(raw_input)
+        stat_vals = basic_listifier(rawinput)
         listified_titles = ['current_hunger', 'humanity', 'stains', 'current_willpower', 'total_willpower']
 
     elif update_all == False:
-        listified_input = stat_names_listifier(raw_input, True)
+        listified_input = stat_names_listifier(rawinput, True)
         listified_titles = listified_input[0]
         stat_vals = listified_input[1]
         if listified_input == 'Invalid':
@@ -39,7 +42,7 @@ def update_stats(playerID, guildID, raw_input, update_all=False, char_name=False
             column_title_str = ', '.join(listified_titles)
             list_column_Qs = [title + '=?' for title in listified_titles]
             columns_Qs = ', '.join(list_column_Qs)
-
+ 
     if char_name == False:
         sql = f"""UPDATE {default_table}
                     SET {columns_Qs}
@@ -219,4 +222,4 @@ def clear_stats(playerID, guildID, stats, clear_row=False, char_name=False, tabl
 #     cur.close()
 #     cxn.close()
 
-#     print("Command has been executed. Table has been deleted.")        
+#     print("Command has been executed. Table has been deleted.")

@@ -3,10 +3,12 @@ import discord
 from string import capwords
 from discord import Embed, Member
 
-DB_PATH = "./data/db/database.db"
-default_table = 'dynamic_stats'
+'''I'm working to remake a bunch of functions and take these out of commission'''
 
-from . general import basic_listifier
+DB_PATH = "./data/db/database.db"
+default_table = 'dynamic_statss'
+
+from . small_functions import basic_listifier
 
 
 ### Not using, but it works! ###
@@ -165,13 +167,14 @@ def stat_name_ifs(stat):
 
 #### ----------------------------------------------------------
 
+### TODO: when it's just a list of one word it actually just comes out as a string. Need to change it to a list
 def stat_names_listifier(stats, words_and_numbs=False):
     """`words_and_numbs` is to differentiate when stats is just numbers, or contains words and numbers."""
     if words_and_numbs == False:
         list_stats = ' '.join(stats).split(', ')
 
         if int(len(list_stats)) == 1:
-            column_name = stat_name_ifs(list_stats[0])
+            column_name = [stat_name_ifs(list_stats[0])]
             return column_name
         else:
             list_of_columns = [stat_name_ifs(term) for term in list_stats]
@@ -186,10 +189,6 @@ def stat_names_listifier(stats, words_and_numbs=False):
         list_stats = [item.rsplit(' ', 1)[0] for item in items_to_assess]
         values_list = [item.split(' ')[-1] for item in items_to_assess]
 
-        # for item in values_list:
-        #     if item.isdigit() == False:
-        #         return 'Invalid'
-
         for item in values_list:
             try:
                 int(item)
@@ -197,7 +196,7 @@ def stat_names_listifier(stats, words_and_numbs=False):
                 return 'Invalid'
 
         if int(len(list_stats)) == 1:
-            column_name = stat_name_ifs(list_stats[0])
+            column_name = [stat_name_ifs(list_stats[0])]
             if column_name == 'Invalid':
                 return 'Invalid'
             else:

@@ -3,7 +3,8 @@ import discord
 from string import capwords
 from discord import Embed, Member
 
-from . register_lookup import stat_name_ifs, stat_names_listifier, stats_lookup, stats_lookup_list_all
+from . format_column_names import stat_names_listifier, stat_name_ifs
+from . register_lookup import stats_lookup, stats_lookup_list_all#, stat_name_ifs, stat_names_listifier,
 from . small_functions import basic_listifier
 
 '''I'm working to remake a bunch of functions and take these out of commission'''

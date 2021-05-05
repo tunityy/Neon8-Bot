@@ -26,11 +26,9 @@ class Dice(Cog):
     -------------------------
      FORMAT FOR ROLLING DICE
     -------------------------
-    Example: .roll 5 2 3 Frenzy check (willpower + hum/3)
+    Example: .basicroll 5 2 3 Frenzy check (willpower + hum/3)
 
-    <command> <total # of dice> <# of hunger dice> <successes needed> <Comments>
-
-    Valid aliases to use this command are below in square brackets []. Beside that are the parameters.""")
+    <command> <total # of dice> <# of hunger dice> <successes needed> <Comments>""")
     async def basicroll(self, ctx, dice_tot: int, dice_hunger: int, success_req: int, *args):
         rolled_stats = v5_roll(dice_tot, dice_hunger, success_req)
         dice_norm = int(dice_tot) - int(dice_hunger)
@@ -51,7 +49,7 @@ class Dice(Cog):
 
 
 
-    @command(aliases=['rolldice', 'dice', 'v5', 'm5', 'v5roll', 'm5roll', 'r'], brief="Roll some dice! Total, Hunger, Successes Needed, Comments")
+    @command(aliases=['rolldice', 'dice', 'v5', 'm5', 'v5roll', 'm5roll', 'r', 'roll5e', 'roll5'], brief="Roll some dice! Total, Hunger, Successes Needed, Comments")
     async def roll(self, ctx, dice_tot: int, dice_hunger: int, success_req: int, *args):
 
         stringified_comment = ' '.join(args)
@@ -59,14 +57,6 @@ class Dice(Cog):
             comment_final = ""
         else:
             comment_final = f"\n\nComment: *{stringified_comment}*"
-
-        embed = Embed(title = f"__{ctx.author.display_name}'s Roll__",
-                      colour = discord.Colour.blue(),
-                      timestamp = datetime.utcnow(),
-                      description = f"{comment_final}")
-
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        # embed.set_footer(text=f"Requested by:  {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
 
         if int(dice_tot) == 0:
             await ctx.send("""```
@@ -82,24 +72,39 @@ class Dice(Cog):
             rolled_stats = v5_roll(dice_tot, dice_hunger, success_req)
             dice_norm = int(dice_tot) - int(dice_hunger)
 
-            fields = [("Result", f"{rolled_stats[3]}  [{rolled_stats[2]}]", False),
+            embed = Embed(title = f"__{ctx.author.display_name}'s Roll__",
+                        colour = discord.Colour.blue(),
+                        timestamp = datetime.utcnow(),
+                        description = f"{comment_final}")
+
+            embed.set_thumbnail(url=ctx.author.avatar_url)
+            # embed.set_footer(text=f"Requested by:  {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+
+            # fields = [("Result", f"__{rolled_stats[3]}__  [{rolled_stats[2]}]   *(Needed: {success_req})*", False),
+            # fields = [("Result", f"{rolled_stats[3]}  [{rolled_stats[2]}]", False),
+            if rolled_stats[3][-1] == '*':
+                success = f"__{rolled_stats[3][:-2]}__\*"
+            else:
+                success = f"__{rolled_stats[3]}__"
+
+            # fields = [("Result", f"__{rolled_stats[3]}__ \U000E0020 \U000E0020 [{rolled_stats[2]}]\n*Needed: {success_req}*", False),
+            fields = [("Result", f"{success} \U000E0020 \U000E0020 [{rolled_stats[2]}]\n*Needed: {success_req}*", False),
                     ("Normal Dice", f"{rolled_stats[0]}", True),
                     ("Hunger Dice", f"{rolled_stats[1]}", True)]
+                    # TODO: change formatting so it matches basic_roll re: Successes Needed
 
             for name, value, inline in fields:
                 embed.add_field(name=name, value=value, inline=inline)
             await ctx.send(embed=embed)
 
 
-    @command(aliases=['randroll', 'quantum', 'qr', 'quantumroll', 'quantum roll', 'truerandom'], brief='Roll some dice! Total, Hunger, Successes Needed, Comments', description = """
+    @command(aliases=['randroll', 'quantum roll', 'qr', 'quantumroll', 'quantum', 'truerandom', 'randomroll'], brief='Roll some dice! Total, Hunger, Successes Needed, Comments', description = """
     -------------------------
      FORMAT FOR ROLLING DICE
     -------------------------
-    Example: .roll 5 2 3 Frenzy check (willpower + hum/3)
+    Example: .qroll 5 2 3 Frenzy check (willpower + hum/3)
 
-    <command> <total # of dice> <# of hunger dice> <successes needed> <Comments>
-
-    Valid aliases to use this command are below in square brackets []. Beside that are the parameters.""")
+    <command> <total # of dice> <# of hunger dice> <successes needed> <Comments>""")
     async def qroll(self, ctx, dice_tot: int, dice_hunger: int, success_req: int, *args):
 
         rolled_stats = v5_roll(dice_tot, dice_hunger, success_req, True)

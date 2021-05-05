@@ -7,9 +7,12 @@ __pycache__
 lib/bot/token.0
 
 lib/cogs/char_commands.py
+lib/cogs/characters.py
 
 lib/cogs/test_cog.py
 lib/db/test.py
+
+lib/characters/
 
 *.old
 other/

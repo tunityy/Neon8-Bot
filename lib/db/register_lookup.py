@@ -12,201 +12,201 @@ from . small_functions import basic_listifier
 
 
 ### Not using, but it works! ###
-def register_player(playerINFO, char_name=False, table_name=default_table):
-    """Register a player's basic information into a table."""
-    cxn = sqlite3.connect(DB_PATH)
-    cur = cxn.cursor()
+# def register_player(playerINFO, char_name=False, table_name=default_table):
+#     """Register a player's basic information into a table."""
+#     cxn = sqlite3.connect(DB_PATH)
+#     cur = cxn.cursor()
 
-    if char_name == False:
-        sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id)
-                VALUES(?,?,?,?)"""
-        val = (playerINFO)
-    elif char_name != False:
-        sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name)
-                VALUES(?,?,?,?,?)"""
-        playerINFO.append(char_name)
-        val = (playerINFO)
+#     if char_name == False:
+#         sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id)
+#                 VALUES(?,?,?,?)"""
+#         val = (playerINFO)
+#     elif char_name != False:
+#         sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name)
+#                 VALUES(?,?,?,?,?)"""
+#         playerINFO.append(char_name)
+#         val = (playerINFO)
 
-    cur.execute(sql, val)
-    cxn.commit()
-    print(f"Registered {playerINFO[0]} as a player in {table_name}.")
+#     cur.execute(sql, val)
+#     cxn.commit()
+#     print(f"Registered {playerINFO[0]} as a player in {table_name}.")
 
-    cur.close()
-    cxn.close()
-
-
-
-def register(playerINFO, char_name=False, reg_full=False, char_stats=False, table_name=default_table):
-    """Register a player and/or character into a table."""
-    cxn = sqlite3.connect(DB_PATH)
-    cur = cxn.cursor()
-
-    if reg_full == False:
-
-        if char_name == False:
-            sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id)
-                    VALUES(?,?,?,?)"""
-            val = playerINFO[0:4]
-        elif char_name != False:
-            sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name)
-                    VALUES(?,?,?,?,?)"""
-            playerINFO.append(char_name)
-            val = (playerINFO)
-
-    elif reg_full == True:
-        if char_name == False:
-            sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,current_hunger,humanity,stains,current_willpower,total_willpower)
-                    VALUES(?,?,?,?,?,?,?,?,?)"""
-            playerINFO.extend(char_stats)
-            val = (playerINFO)
-        elif char_name != False:
-            sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name,current_hunger,humanity,stains,current_willpower,total_willpower)
-                    VALUES(?,?,?,?,?,?,?,?,?,?)"""
-            playerINFO.append(char_name)
-            playerINFO.extend(char_stats)
-            val = (playerINFO)
-
-    cur.execute(sql, val)
-    cxn.commit()
-    print(f"Registered {playerINFO[0]} as a player in {table_name}.")
-
-    cur.close()
-    cxn.close()
+#     cur.close()
+#     cxn.close()
 
 
 
-def register_variable(playerINFO, char_stats, char_name=False, table_name=default_table):
-    """Register a player and/or character into a table, with a variable number of stats."""
-    cxn = sqlite3.connect(DB_PATH)
-    cur = cxn.cursor()
+# def register(playerINFO, char_name=False, reg_full=False, char_stats=False, table_name=default_table):
+#     """Register a player and/or character into a table."""
+#     cxn = sqlite3.connect(DB_PATH)
+#     cur = cxn.cursor()
 
-    listified_input = stat_names_listifier(char_stats, True)
-    listified_titles = listified_input[0]
-    stat_vals = listified_input[1]
-    if listified_input == 'Invalid':
-        cur.close()
-        cxn.close()
-        return 'Invalid'
+#     if reg_full == False:
 
-    else:
-        listified_input = stat_names_listifier(char_stats, True)
-        listified_titles = listified_input[0]
-        stat_vals = listified_input[1]
+#         if char_name == False:
+#             sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id)
+#                     VALUES(?,?,?,?)"""
+#             val = playerINFO[0:4]
+#         elif char_name != False:
+#             sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name)
+#                     VALUES(?,?,?,?,?)"""
+#             playerINFO.append(char_name)
+#             val = (playerINFO)
+
+#     elif reg_full == True:
+#         if char_name == False:
+#             sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,current_hunger,humanity,stains,current_willpower,total_willpower)
+#                     VALUES(?,?,?,?,?,?,?,?,?)"""
+#             playerINFO.extend(char_stats)
+#             val = (playerINFO)
+#         elif char_name != False:
+#             sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name,current_hunger,humanity,stains,current_willpower,total_willpower)
+#                     VALUES(?,?,?,?,?,?,?,?,?,?)"""
+#             playerINFO.append(char_name)
+#             playerINFO.extend(char_stats)
+#             val = (playerINFO)
+
+#     cur.execute(sql, val)
+#     cxn.commit()
+#     print(f"Registered {playerINFO[0]} as a player in {table_name}.")
+
+#     cur.close()
+#     cxn.close()
+
+
+
+# def register_variable(playerINFO, char_stats, char_name=False, table_name=default_table):
+#     """Register a player and/or character into a table, with a variable number of stats."""
+#     cxn = sqlite3.connect(DB_PATH)
+#     cur = cxn.cursor()
+
+#     listified_input = stat_names_listifier(char_stats, True)
+#     listified_titles = listified_input[0]
+#     stat_vals = listified_input[1]
+#     if listified_input == 'Invalid':
+#         cur.close()
+#         cxn.close()
+#         return 'Invalid'
+
+#     else:
+#         listified_input = stat_names_listifier(char_stats, True)
+#         listified_titles = listified_input[0]
+#         stat_vals = listified_input[1]
         
-        if listified_input == 'Invalid':
-            cur.close()
-            cxn.close()
-            return 'Invalid'
+#         if listified_input == 'Invalid':
+#             cur.close()
+#             cxn.close()
+#             return 'Invalid'
 
-        elif isinstance(listified_input[0], str):  # only 1 stat
-            column_title_str = listified_titles
-            Qs_length = '?'
+#         elif isinstance(listified_input[0], str):  # only 1 stat
+#             column_title_str = listified_titles
+#             Qs_length = '?'
 
-        elif isinstance(listified_input[0], list) and len(listified_input[1]) > 1: # more than 1 stat
-            column_title_str = ', '.join(listified_titles)
-            Qs_length = ','.join(['?' for title in listified_input[0]])
+#         elif isinstance(listified_input[0], list) and len(listified_input[1]) > 1: # more than 1 stat
+#             column_title_str = ', '.join(listified_titles)
+#             Qs_length = ','.join(['?' for title in listified_input[0]])
 
-        if char_name == False:
-            sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,{column_title_str})
-                    VALUES(?,?,?,?,{Qs_length})
-                    RETURNING {column_title_str} as new_stats"""
-            val = playerINFO + stat_vals
+#         if char_name == False:
+#             sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,{column_title_str})
+#                     VALUES(?,?,?,?,{Qs_length})
+#                     RETURNING {column_title_str} as new_stats"""
+#             val = playerINFO + stat_vals
 
-        elif char_name != False:
-            sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name,{column_title_str})
-                    VALUES(?,?,?,?,?,{Qs_length})
-                    RETURNING {column_title_str} as new_stats"""
+#         elif char_name != False:
+#             sql = f"""INSERT INTO {table_name}(player_name,player_display_name,player_id,guild_id,character_name,{column_title_str})
+#                     VALUES(?,?,?,?,?,{Qs_length})
+#                     RETURNING {column_title_str} as new_stats"""
 
-            val = playerINFO + char_name + stat_vals
+#             val = playerINFO + char_name + stat_vals
 
-    cur.execute(sql, val)
-    result = cur.fetchone()
-    cxn.commit()
-    print(f"Registered {playerINFO[0]} as a player in {table_name}.")
-    cur.close()
-    cxn.close()
-    return listified_titles, result
+#     cur.execute(sql, val)
+#     result = cur.fetchone()
+#     cxn.commit()
+#     print(f"Registered {playerINFO[0]} as a player in {table_name}.")
+#     cur.close()
+#     cxn.close()
+#     return listified_titles, result
 
 
 #### ----------------------------------------------------------
 
 
-def stat_name_ifs(stat):
-    st = str(stat).lower()
-    column_name = ['current_hunger', 'humanity', 'stains', 'current_willpower', 'total_willpower']
+# def stat_name_ifs(stat):
+#     st = str(stat).lower()
+#     column_name = ['current_hunger', 'humanity', 'stains', 'current_willpower', 'total_willpower']
 
-    if st in column_name:
-        return st
-    else:
+#     if st in column_name:
+#         return st
+#     else:
 
-        hung_synonyms = ['current_hunger', 'current hunger', 'currenthunger', 'hunger', 'hung',
-                         'bp', 'blood pool', 'blood dice', 'bd', 'bloop', 'bloop pool'] # I keep typoing bloop and bloop pool, so fuck it, I'm adding it
+#         hung_synonyms = ['current_hunger', 'current hunger', 'currenthunger', 'hunger', 'hung',
+#                          'bp', 'blood pool', 'blood dice', 'bd', 'bloop', 'bloop pool'] # I keep typoing bloop and bloop pool, so fuck it, I'm adding it
 
-        hum_synonyms = ['hum']
+#         hum_synonyms = ['hum']
 
-        stains_synonyms = ['stain', 'stian'] #more typos
+#         stains_synonyms = ['stain', 'stian'] #more typos
 
-        cwp_synonyms = ['current_willpower', 'current willpower', 'willpower', 'wp', 'currentwillpower', 'currentwp',
-                        'will', 'current will', 'current wp', 'cwill', 'c will', 'c wp', 'cwp', 'cw']
+#         cwp_synonyms = ['current_willpower', 'current willpower', 'willpower', 'wp', 'currentwillpower', 'currentwp',
+#                         'will', 'current will', 'current wp', 'cwill', 'c will', 'c wp', 'cwp', 'cw']
 
-        twp_synonyms = ['total_willpower', 'total willpower', 'totalwillpower', 'total wp', 'totalwp', 'twp', 't wp',
-                        'totalwill', 'total will', 'willpower total', 'wp total', 'will total', 'wptotal', 'willtotal', 'twill', 'tw', 't will']
+#         twp_synonyms = ['total_willpower', 'total willpower', 'totalwillpower', 'total wp', 'totalwp', 'twp', 't wp',
+#                         'totalwill', 'total will', 'willpower total', 'wp total', 'will total', 'wptotal', 'willtotal', 'twill', 'tw', 't will']
         
-        if st in hung_synonyms:
-            return 'current_hunger'
-        elif st in hum_synonyms:
-            return 'humanity'
-        elif st in stains_synonyms:
-            return 'stains'
-        elif st in cwp_synonyms:
-            return 'current_willpower'
-        elif st in twp_synonyms:
-            return 'total_willpower'
-        else:
-            return 'Invalid'
+#         if st in hung_synonyms:
+#             return 'current_hunger'
+#         elif st in hum_synonyms:
+#             return 'humanity'
+#         elif st in stains_synonyms:
+#             return 'stains'
+#         elif st in cwp_synonyms:
+#             return 'current_willpower'
+#         elif st in twp_synonyms:
+#             return 'total_willpower'
+#         else:
+#             return 'Invalid'
 
 #### ----------------------------------------------------------
 
-### TODO: when it's just a list of one word it actually just comes out as a string. Need to change it to a list
-def stat_names_listifier(stats, words_and_numbs=False):
-    """`words_and_numbs` is to differentiate when stats is just numbers, or contains words and numbers."""
-    if words_and_numbs == False:
-        list_stats = ' '.join(stats).split(', ')
+# ### TODO: when it's just a list of one word it actually just comes out as a string. Need to change it to a list
+# def stat_names_listifier(stats, words_and_numbs=False):
+#     """`words_and_numbs` is to differentiate when stats is just numbers, or contains words and numbers."""
+#     if words_and_numbs == False:
+#         list_stats = ' '.join(stats).split(', ')
 
-        if int(len(list_stats)) == 1:
-            column_name = [stat_name_ifs(list_stats[0])]
-            return column_name
-        else:
-            list_of_columns = [stat_name_ifs(term) for term in list_stats]
-            if 'Invalid' in list_of_columns:
-                return 'Invalid'
-            else:
-                return list_of_columns
+#         if int(len(list_stats)) == 1:
+#             column_name = [stat_name_ifs(list_stats[0])]
+#             return column_name
+#         else:
+#             list_of_columns = [stat_name_ifs(term) for term in list_stats]
+#             if 'Invalid' in list_of_columns:
+#                 return 'Invalid'
+#             else:
+#                 return list_of_columns
 
-    elif words_and_numbs == True:
-        items_to_assess = ' '.join(stats).split(', ')
+#     elif words_and_numbs == True:
+#         items_to_assess = ' '.join(stats).split(', ')
 
-        list_stats = [item.rsplit(' ', 1)[0] for item in items_to_assess]
-        values_list = [item.split(' ')[-1] for item in items_to_assess]
+#         list_stats = [item.rsplit(' ', 1)[0] for item in items_to_assess]
+#         values_list = [item.split(' ')[-1] for item in items_to_assess]
 
-        for item in values_list:
-            try:
-                int(item)
-            except:
-                return 'Invalid'
+#         for item in values_list:
+#             try:
+#                 int(item)
+#             except:
+#                 return 'Invalid'
 
-        if int(len(list_stats)) == 1:
-            column_name = [stat_name_ifs(list_stats[0])]
-            if column_name == 'Invalid':
-                return 'Invalid'
-            else:
-                return column_name, values_list
-        else:
-            list_of_columns = [stat_name_ifs(term) for term in list_stats]
-            if 'Invalid' in list_of_columns:
-                return 'Invalid'
-            else:
-                return list_of_columns, values_list
+#         if int(len(list_stats)) == 1:
+#             column_name = [stat_name_ifs(list_stats[0])]
+#             if column_name == 'Invalid':
+#                 return 'Invalid'
+#             else:
+#                 return column_name, values_list
+#         else:
+#             list_of_columns = [stat_name_ifs(term) for term in list_stats]
+#             if 'Invalid' in list_of_columns:
+#                 return 'Invalid'
+#             else:
+#                 return list_of_columns, values_list
 
 
 #### ----------------------------------------------------------

@@ -38,6 +38,10 @@ async def ping(ctx):
     await ctx.send(f"Pong!  |  {round(client.latency * 1000)}ms")
 
 
+# async def help(ctx):
+#     await ctx.send()
+
+
 ### COGS ###
 
 @client.command()

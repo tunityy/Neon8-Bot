@@ -1,9 +1,43 @@
-from . small_functions import raw_results, list_results, separate_results, count_res, true_random_roll, quantum_d10
+# from . small_functions import raw_results, true_random_roll, quantum_d10
+import random
+from random import randint
+import quantumrandom
+
+
+def raw_results(number_of_dice:int, number_of_sides=10):
+    '''Roll some dice!'''
+    if number_of_dice == 0 or type(number_of_dice) != int:
+        return 'Invalid'
+    else:
+        num_sides = int(number_of_sides)
+        num_dice = int(number_of_dice)
+        return [randint(1, num_sides) for r in range(num_dice)]
+
+
+# It is SUPER SLOW. Not joking.
+def true_random_roll(num_dice:int, num_sides=10):
+    '''Uses quantum number generation to produce a series of truly random numbers, not pseudo-RNG. \n\nBe warned: this function is EXTREMELY slow.'''
+    num_dice = int(num_dice)
+    num_sides = int(num_sides)
+    return [int(quantumrandom.randint(1, num_sides + 1)) for r in range(num_dice)]
+
+
+def quantum_d10(number_of_dice:int):
+    '''
+    Uses quantum number generation to produce a series of truly random numbers between 1-10.
+    Based off the quantumrandom module, this is true RNG, not pseudo-RNG.
+    '''
+    remove_decimal = [x for x in str(quantumrandom.randint()) if x != '.']
+
+    while len(remove_decimal) < number_of_dice:
+        for y in range(round(number_of_dice/10)):
+            remove_decimal = remove_decimal + [x for x in str(quantumrandom.randint()) if x != '.']
+
+    list_of_numbers = [int(y) if y != '0' else 10 for y in remove_decimal]
+    return [list_of_numbers[y] for y in range(number_of_dice)]
 
 
 def v5_roll(dice_tot, dice_hunger, success_req, true_random=False):
-# def the_roll_stats(dice_tot, dice_hunger, success_req, true_random=False):
-# def the_roll_stats(dice_tot, dice_hunger, success_req, method=1): # use 0 for the method to use quantum RNG
     '''A function for handling dice rolls for v5 Vampire: the Masquerade rules. 
     \n`dice_tot` is the total number of dice
     \n`dice_hunger` is number of hunger dice
@@ -11,59 +45,44 @@ def v5_roll(dice_tot, dice_hunger, success_req, true_random=False):
     \n`true_random` enables quantum number generation, for a truly random roll'''
     dice_norm = int(dice_tot) - int(dice_hunger)
 
-    if true_random == False:
-        fxn_norm = raw_results(dice_norm)
-        fxn_hung = raw_results(dice_hunger)
-    elif true_random == True:
-        fxn_norm = quantum_d10(dice_norm)
-        fxn_hung = quantum_d10(dice_hunger)
-
-
-    # if method == 1:
-    #     fxn_norm = raw_results(dice_norm)
-    #     fxn_hung = raw_results(dice_hunger)
-    # elif method == 0:
-    #     fxn_norm = true_random_roll(dice_norm)
-    #     fxn_hung = true_random_roll(dice_hunger)
-
-
     if dice_norm == 0:
         norm_roll = "-"
         norm_list = []
     else:
-        norm_roll = fxn_norm
-        norm_list = list_results(norm_roll)
+        if true_random == False:
+            norm_list = raw_results(dice_norm)
+        elif true_random == True:
+            norm_list = quantum_d10(dice_norm)
+        norm_roll = ', '.join(f'{item}' for item in norm_list)            
 
-    norm_10 = count_res(norm_list, 10)
-    norm_6 = count_res(norm_list, 6) # this is number of dice that are >= 6. But just writing 6 is easier.
+    norm_10 = len([i for i in norm_list if i == 10])
+    norm_6 = len([i for i in norm_list if i >= 6])
 
     ### Hunger dice stuff ###
     if int(dice_hunger) == 0:
         hung_roll = "-"
         hung_list = []
     else:
-        hung_roll = fxn_hung
-        hung_list = list_results(hung_roll)
+        if true_random == False:
+            hung_list = raw_results(dice_hunger)
+        elif true_random == True:
+            hung_list = quantum_d10(dice_hunger)
+        hung_roll = ', '.join(f'{item}' for item in hung_list)     
 
-    hung_10 = count_res(hung_list, 10)
-    hung_6 = count_res(hung_list, 6)
-    hung_1 = count_res(hung_list, 1)
-
+    hung_10 = len([i for i in hung_list if i == 10])
+    hung_6 = len([i for i in hung_list if i >= 6])
+    hung_1 = len([i for i in hung_list if i == 1])
 
     ### Calculating successes, criticals, and if the roll passed or failed ###
     total_10s = norm_10 + hung_10
-    total_6s = count_res(norm_list, 6) + count_res(hung_list, 6)
+    total_6s = norm_6 + hung_6   
 
     base_value = total_6s - total_10s
     crit_value = (total_10s * 2) - (total_10s % 2)
     success_value_final = crit_value + base_value
 
-    success_get = success_value_final >= int(success_req)
-    success_lose = success_value_final < int(success_req)
-
-    passed = success_get == True and success_lose == False
-    failed = success_get == False and success_lose == True
-
+    passed = success_value_final >= int(success_req)
+    failed = success_value_final < int(success_req)
 
     if success_req > 0:
         if failed and hung_1 >= 1:

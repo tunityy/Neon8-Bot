@@ -1,8 +1,5 @@
 def column_to_text(column_name):
     if type(column_name) == str:
-        # if column_name == 'current_hunger':
-        #     return 'Hunger'
-        # else:
         return capwords(column_name.replace('_', ' '))
     else:
         results = [capwords(y.replace('_', ' ')) for y in column_name]
@@ -16,17 +13,19 @@ def stat_name_ifs(stat):
     if st in column_name:
         return st
     else:
+        # some of these include common or possible typos and misspellings
         hung_synonyms = ['current_hunger', 'current hunger', 'currenthunger', 'hung', 'hungry'
-                         'bp', 'blood pool', 'blood dice', 'bd', 'bloop', 'bloop pool'] # I keep typoing bloop and bloop pool, so fuck it, I'm adding it
+                         'bp', 'blood pool', 'blood dice', 'bd', 'bloop', 'bloop pool']
         hum_synonyms = ['hum', 'huemanatee', 'hue manatee', 'humane', 'human']
-        stains_synonyms = ['stain', 'stian'] #more typos
+        stains_synonyms = ['stain', 'stian', 'st', 'stians', 'stans']
         cwp_synonyms = ['current_willpower', 'current willpower', 'willpower', 'wp', 'currentwillpower', 'currentwp',
                         'will', 'current will', 'current wp', 'cwill', 'c will', 'c wp', 'cwp', 'cw', 'c w']
-        twp_synonyms = ['total_willpower', 'total willpower', 'totalwillpower', 'total wp', 'totalwp', 'twp', 't wp', 'total',
+        twp_synonyms = ['total willpower', 'totalwillpower', 'total wp', 'totalwp', 'twp', 't wp', 'total', 'tot',
                         'totalwill', 'total will', 'willpower total', 'wp total', 'will total', 'wptotal', 'willtotal', 'twill', 'tw', 't will']
-        spr_dmg_synonyms = ['superficial', 'superficial dmg', 'superficialdmg', 'sdmg', 'sdamage', 's damage', 'sdmg']
-        agg_dmg_synonyms = ['agg', 'aggravated', 'aggr', 'agg dmg', 'aggdmg', 'aggr dmg', 'aggrdmg', 'aggravateddmg', 'aggravated dmg', 'aggravated damage',
-                            'admg', 'adamage', 'a dmg', 'a damage', 'aggravateddamage']
+        spr_dmg_synonyms = ['superficial', 'superficial dmg', 'superficialdmg', 'sdmg', 'sdamage', 's damage', 'sdmg', 'super']
+        agg_dmg_synonyms = ['agg', 'aggravated', 'aggr', 'agg dmg', 'aggdmg', 'aggr dmg', 'aggrdmg', 'aggravateddmg', 'aggravated dmg',
+                            'aggravated damage', 'admg', 'adamage', 'a dmg', 'a damage', 'aggravateddamage',
+                            'aggrivated', 'aggrivated damage', 'aggrevated', 'aggrevated damage', 'aggrevated dmg', 'aggrivated dmg']
         health_synonyms = ['hp', 'hitpoints', 'hit points', 'health bar', 'healthbar']
 
         if st in hung_synonyms:

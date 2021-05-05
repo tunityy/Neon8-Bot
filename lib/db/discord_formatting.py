@@ -1,25 +1,68 @@
-from . db import _register, _update, _list_all, search, query_player#, db_select_characters
+from . db import _register, _update, _list_all, search, query_user#, db_select_characters
 from . format_column_names import stat_name_ifs, stat_names_listifier, column_to_text
 
 ### DON'T FORGET, I NEED TO MAKE THESE FUNCTIONS WORK WITH ROLLING DICE!
 
 
-def registration(player_name, player_display_name, playerID, guildID, rawinput, char_name=False, dice=False):
-    query_result = query_player(playerID, guildID)
-    if query_result is not None:
-        pass
-        # do something :P
 
-    elif query_result is None:
+def fregister_prompt(raw_numbers):
+    numbers_list = basic_listifier(raw_numbers)
+    char_info = [item+',' for item in numbers_list[:-1]] + [numbers_list[-1]]
+    column_names = ['hunger', 'humanity', 'stains', 'current_willpower', 'total_willpower']
+    rawinput = [None]*10
+    rawinput[::2] = column_names
+    rawinput[1::2] = char_info
+    return rawinput
 
-        raw_result = _register(player_name, player_display_name, playerID, guildID, rawinput, char_name)
-        print(raw_result)
-        print(type(raw_result))
+
+def fregister_results(results):
+    columns = [column_to_text(x) for x in results[0]]
+    zipper = zip(columns, results[1])
+    lst = [f'{item[0]} set to {item[1]}'for item in zipper]
+    stats = '\n'.join(lst)
+    return stats
+
+
+# def registration(user_name, user_display_name, userID, guildID, rawinput=None, char_name=False, dice=False):
+#     '''Register a player and/or character!'''
+#     my_result = query_user(userID, guildID)
+#     if my_result is not None:
+#         msg = "Player is already registered in database."
+
+#     elif my_result is None:
+#         print(rawinput)
+#         if rawinput is None:
+#             rawinput = ()
+#         print(rawinput)
+#         user_name = f"{user_name}"
+#         result = _register(user_name, user_display_name, userID, guildID, rawinput)
+#         print(result)
+#         if result is None or result is []:
+#             msg = "Error: something went wrong."
+#         else:
+#             print(result[1])
+#             return result[1]
+#         # await ctx.send(f"""Registered basic player information for **{ctx.author.display_name}** in database.
+# # \nNo character stats have been added yet. Please use `.update` or `.set` to enter your stats.""")
+#         # print("\n ----- le fin -----")
+
+
+
+    # query_result = query_player(playerID, guildID)
+    # if query_result is not None:
+    #     msg = "Player is already registered in database."
+
+    # elif query_result is None:
+
+    #     raw_result = _register(player_name, player_display_name, playerID, guildID, rawinput, char_name)
+    #     print(raw_result)
+    #     print(type(raw_result))
         
-        # Maybe also need a version (different fxn?) of this that does basic player registration for a roll or whatever if the player is not in the database
+    #     # Maybe also need a version (different fxn?) of this that does basic player registration for a roll or whatever if the player is not in the database
 
-        # Maybe dice arg makes the output different based on whether it's for a dice roll or just a normal command
-        # So I need to take all this stuff and format it nicely for output in discord
+    #     # Maybe dice arg makes the output different based on whether it's for a dice roll or just a normal command
+    #     # So I need to take all this stuff and format it nicely for output in discord
+
 
 
 def stat_search(playerID, guildID, rawinput, char_name=False, all_columns=False):

@@ -8,6 +8,7 @@ db_select
 db_select_all
 db_select_characters
 db_update
+db_update_basic
 db_delete
 check_table_exists
 delete_table - this one is currently commented out
@@ -19,7 +20,7 @@ default_table = 'dynamic_statss'
 
 
 def query_user(userID, guildID, table_name=default_table):
-    '''Check if the user is in the database, but pulling up a list of all characters registered to that user in that guild.'''
+    '''Check if the user is in the database, by pulling up a list of all characters registered to that user in that guild.'''
     cxn = sqlite3.connect(DB_PATH)
     cur = cxn.cursor()
 
@@ -99,7 +100,7 @@ def db_select_characters(userID, guildID, table_name=default_table):
 
 
 def db_update(userID, guildID, values, column_names, column_Qs, char_name=False, table_name=default_table):
-    '''Update values in the database.
+    '''Update values in the database by userID and guildID.
     \n`column_names` and `column_Qs` need to be pre-formatted as strings.'''
     cxn = sqlite3.connect(DB_PATH)
     cur = cxn.cursor()
@@ -108,13 +109,13 @@ def db_update(userID, guildID, values, column_names, column_Qs, char_name=False,
         sql = f"""UPDATE {table_name}
                     SET {column_Qs}
                     WHERE user_id = {userID} and guild_id = {guildID}
-                RETURNING {column_names[0]} as new_stat_vals"""
+                RETURNING {column_names[0]} as new_val"""
 
     elif char_name != False:
         sql = f"""UPDATE {table_name}
                     SET {column_Qs}
                     WHERE user_id = {userID} and guild_id = {guildID} and character_name = '{char_name}'
-                RETURNING {column_names[0]} as new_stat_vals"""
+                RETURNING {column_names[0]} as new_val"""
     val = values
     cur.execute(sql,val)
     result = cur.fetchone()
@@ -125,15 +126,51 @@ def db_update(userID, guildID, values, column_names, column_Qs, char_name=False,
     return result
 
 
-def db_delete(column_name, column_Qs, values, guildID=False, table_name=default_table):
+def db_update_basic(guildID, column_Qs, return_column_names, values, where_values=False, table_name=default_table):
+    '''
+    Update values in the database by guildID. Can add additional where clauses.
+    `column_Qs` is a combination of a column name with '=?'. e.g. 'email=?' or 'email=?,phone=?' etc.
+    `return_column_names` and `column_Qs` need to be pre-formatted as strings.
+    `where_columns` is column names for the where clause, `where_Qs` is the same number of ?s as number of columns in where_columns
+    if `where_columns` == False, values = information to be put in the cells that are being updated
+    if `where_columns` != False, values = [new updated info for cells, info in where_columns]
+    (This is a terrible description, I'm so sorry.)
+    '''
+    cxn = sqlite3.connect(DB_PATH)
+    cur = cxn.cursor()
+
+    if where_values == False:
+        sql = f"""UPDATE {table_name}
+                    SET {column_Qs}
+                    WHERE guild_id = {guildID}
+                RETURNING {return_column_names} as new_note"""
+
+    elif where_values != False:
+        sql = f"""UPDATE {table_name}
+                    SET {column_Qs}
+                    WHERE guild_id = {guildID} and {where_values}
+                RETURNING {return_column_names} as new_note"""
+
+    val = values
+    cur.execute(sql,val)
+    result = cur.fetchone()
+    cxn.commit()
+    cur.close()
+    cxn.close()
+    return result
+
+
+def db_delete(column_names, Qs, values, guildID=False, table_name=default_table):
+    '''Delete one or more rows from the table'''
+    # TODO: Maybe put a limit on quantity?
     cxn = sqlite3.connect(DB_PATH)
     cur = cxn.cursor()
 
     if guildID == False:
-        sql = f"DELETE from {table_name} WHERE {column_name} IN ({column_Qs}) RETURNING *"
+        sql = f"DELETE from {table_name} WHERE {column_names} IN ({Qs}) RETURNING *"
 
     elif guildID != False:
-        sql = f"DELETE from {table_name} WHERE guild_id={guildID} and {column_name} IN ({column_Qs}) RETURNING *"
+        sql = f"DELETE from {table_name} WHERE guild_id={guildID} and {column_names} IN ({Qs}) RETURNING *"
 
     cur.execute(sql,values)
     results = cur.fetchall()
@@ -172,3 +209,6 @@ def check_table_exists(table_name):
 #     cxn.commit()
 #     cur.close()
 #     cxn.close()
+
+# ---------------------------------------------------------
+# ---------------------------------------------------------

@@ -1,4 +1,3 @@
-# from . small_functions import raw_results, true_random_roll, quantum_d10
 import random
 from random import randint
 import quantumrandom
@@ -49,16 +48,16 @@ def v5_roll(dice_tot, dice_hunger, success_req, true_random=False):
         norm_roll = "-"
         norm_list = []
     else:
-        if true_random == False:
+        if true_random == False: # using random.randint
             norm_list = raw_results(dice_norm)
         elif true_random == True:
-            norm_list = quantum_d10(dice_norm)
-        norm_roll = ', '.join(f'{item}' for item in norm_list)            
+            norm_list = quantum_d10(dice_norm) # using quantumrandom.randint
+        norm_roll = ', '.join(f'{item}' for item in norm_list)
 
     norm_10 = len([i for i in norm_list if i == 10])
     norm_6 = len([i for i in norm_list if i >= 6])
 
-    ### Hunger dice stuff ###
+    # Hunger dice stuff
     if int(dice_hunger) == 0:
         hung_roll = "-"
         hung_list = []
@@ -67,13 +66,13 @@ def v5_roll(dice_tot, dice_hunger, success_req, true_random=False):
             hung_list = raw_results(dice_hunger)
         elif true_random == True:
             hung_list = quantum_d10(dice_hunger)
-        hung_roll = ', '.join(f'{item}' for item in hung_list)     
+        hung_roll = ', '.join(f'{item}' for item in hung_list)
 
     hung_10 = len([i for i in hung_list if i == 10])
     hung_6 = len([i for i in hung_list if i >= 6])
     hung_1 = len([i for i in hung_list if i == 1])
 
-    ### Calculating successes, criticals, and if the roll passed or failed ###
+    # Calculating successes, criticals, and if the roll passed or failed
     total_10s = norm_10 + hung_10
     total_6s = norm_6 + hung_6   
 

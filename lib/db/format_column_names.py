@@ -1,3 +1,6 @@
+from string import capwords
+
+
 def column_to_text(column_name):
     if type(column_name) == str:
         return capwords(column_name.replace('_', ' '))
@@ -14,11 +17,12 @@ def stat_name_ifs(stat):
         return st
     else:
         # some of these include common or possible typos and misspellings
-        hung_synonyms = ['current_hunger', 'current hunger', 'currenthunger', 'hung', 'hungry'
-                         'bp', 'blood pool', 'blood dice', 'bd', 'bloop', 'bloop pool']
+        hung_synonyms = ['current_hunger', 'current hunger', 'currenthunger', 'hung', 'hungry', 'hunger dice', 'hung dice', 'hungerdice',
+                         'hungdice', 'hd', 'bp', 'blood pool', 'blood dice', 'bd',
+                         'hugn', 'hugner', 'bloop', 'bloop pool']
         hum_synonyms = ['hum', 'huemanatee', 'hue manatee', 'humane', 'human']
         stains_synonyms = ['stain', 'stian', 'st', 'stians', 'stans']
-        cwp_synonyms = ['current_willpower', 'current willpower', 'willpower', 'wp', 'currentwillpower', 'currentwp',
+        cwp_synonyms = ['current willpower', 'willpower', 'wp', 'currentwillpower', 'currentwp',
                         'will', 'current will', 'current wp', 'cwill', 'c will', 'c wp', 'cwp', 'cw', 'c w']
         twp_synonyms = ['total willpower', 'totalwillpower', 'total wp', 'totalwp', 'twp', 't wp', 'total', 'tot',
                         'totalwill', 'total will', 'willpower total', 'wp total', 'will total', 'wptotal', 'willtotal', 'twill', 'tw', 't will']
@@ -49,7 +53,7 @@ def stat_name_ifs(stat):
 
 #### ----------------------------------------------------------
 
-### TODO: when it's just a list of one word it actually just comes out as a string. Need to change it to a list
+### TODO: when it's just a list of one word it actually just comes out as a string. Need to change it to a list?
 def stat_names_listifier(stats, words_and_numbs=False):
     """`words_and_numbs` is to differentiate when stats is just numbers, or contains words and numbers."""
     if words_and_numbs == False:

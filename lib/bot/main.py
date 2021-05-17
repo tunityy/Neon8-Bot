@@ -5,7 +5,7 @@ from discord.ext.commands import command, has_permissions, bot_has_permissions
 from discord import Intents
 from glob import glob
 
-owners = [148311502716141568]
+owners = ["put bot owner's/owners' userid(s) number here"]
 COGS = [path.split('\\')[-1][:-3] for path in glob('./lib/cogs/*.py')]
 client = commands.Bot(case_insensitive=True, command_prefix = '.', owner_ids=set(owners), intents=Intents.all())
 # TODO: I know there's a way to have multiple prefixes, look that up
@@ -16,7 +16,7 @@ client = commands.Bot(case_insensitive=True, command_prefix = '.', owner_ids=set
 @client.event
 async def on_ready():
     print(f"\nI'm combat ready!\n")
-    await client.get_channel(823615456605896754).send("Reporting for duty!")
+    await client.get_channel("put channel number here").send("Reporting for duty!")
 
 @client.event
 async def on_connect():

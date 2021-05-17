@@ -15,10 +15,14 @@ delete_table - this one is currently commented out
 '''
 
 DB_PATH = "./data/db/database.db"
-default_table = 'dynamic_statss'
+default_table = 'dynamic_statss' # this is the table where I'm testing stuff on, the "real" one is just 'dynamic_stats'
+
+# TODO: Look more into prepared statements and escape strings..? Because SQLite injection attacks are a thing.
+# And like, this is just my own private bot, but good habits are easier to get into sooner than later.
+# https://realpython.com/prevent-python-sql-injection/
 
 
-
+# TODO: make it so there's a option to query by character name? Not just pull up all names to check if the user exists?
 def query_user(userID, guildID, table_name=default_table):
     '''Check if the user is in the database, by pulling up a list of all characters registered to that user in that guild.'''
     cxn = sqlite3.connect(DB_PATH)
@@ -66,6 +70,7 @@ def db_select(userID, guildID, column_names, char_name=False, table_name=default
         cur.execute(f"SELECT {column_names[0]} FROM {table_name} WHERE user_id={userID} and guild_id={guildID}")
     elif char_name != False:
         cur.execute(f"SELECT {column_names[0]} FROM {table_name} WHERE user_id={userID} and guild_id={guildID} and character_name='{char_name}'")
+        # TODO: change the line above this, because it could be vulnerable to SQLite injection attacks because of char_name
 
     result = cur.fetchone()
     cur.close()
@@ -116,6 +121,8 @@ def db_update(userID, guildID, values, column_names, column_Qs, char_name=False,
                     SET {column_Qs}
                     WHERE user_id = {userID} and guild_id = {guildID} and character_name = '{char_name}'
                 RETURNING {column_names[0]} as new_val"""
+                # TODO: change the line above this, because it could be vulnerable to SQLite injection attacks because of char_name
+
     val = values
     cur.execute(sql,val)
     result = cur.fetchone()

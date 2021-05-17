@@ -1,19 +1,7 @@
-import sqlite3 # I don't think I actually need this here...
 import pytz
 import datetime
 from datetime import datetime, timezone
 from string import capwords
-
-
-def column_to_text(column_name):
-    if type(column_name) == str:
-        if column_name == 'current_hunger':
-            return 'Hunger'
-        else:
-            return capwords(column_name.replace('_', ' '))
-    else:
-        results = [capwords(y.replace('_', ' ')) for y in column_name]
-        return results
 
 
 def basic_listifier(item):

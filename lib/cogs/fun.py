@@ -43,6 +43,8 @@ class Fun(Cog):
             if say(('brujah bear', 'dimi the bear')):
                 await channel.send("https://cdn.discordapp.com/attachments/780155399504134157/823078693945081886/AB6JhC8.jpg")
 
+            if say(('d i love you', 'i love you d', 'd, i love you', 'i love you, d')):
+                await channel.send("<a:0hearts:841074116618223637>")
 
 
     ### COMMANDS ###
@@ -91,11 +93,6 @@ class Fun(Cog):
         'https://media.giphy.com/media/jsfvOm5LsiwRtB6XSR/giphy.gif']
 
         await ctx.send(f"{random.choice(peacock_pic)}")
-
-
-    @command(aliases=['gottagofast', 'zoom', 'sonic'])
-    async def sonic_peacock(self, ctx):
-        await ctx.send('https://media.giphy.com/media/lQgzJVgQgxhaOTT1ZB/giphy.gif')
 
 
 def setup(client):

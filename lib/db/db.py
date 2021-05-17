@@ -8,9 +8,11 @@ from . db_general import query_user, db_insert, db_select, db_select_all, db_sel
 from . small_functions import column_to_text, basic_listifier, timestamp_mountain, extra_spacing
 from . format_column_names import stat_name_ifs, stat_names_listifier
 
-### These are going to be decommissioned as I edit and streamline the functions and commands associated with them
-from . register_lookup import stats_lookup, stats_lookup_list_all, name_lookup
-from . update import update_stats, update_character_name, increment, clear_stats
+# ### These are going to be decommissioned as I edit and streamline the functions and commands associated with them
+# from . register_lookup import stats_lookup, stats_lookup_list_all, name_lookup
+# from . update import update_stats, update_character_name, increment, clear_stats
+
+from lib.dice.rolls import raw_results
 
 
 '''
@@ -33,144 +35,10 @@ DB_PATH = "./data/db/database.db"
 default_table = 'dynamic_statss'
 es = extra_spacing
 
-### -----------------------------------------------
 
+# TODO: make it so everything that involves updating the table at all will update the person's display name at the same time?
+# TODO: almost maybe just make a command to update your display name?
 
-# def query_user(userID, guildID, table_name=default_table):
-#     '''Check if the user is in the database, but pulling up a list of all characters registered to that user in that guild.'''
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     cur.execute(f'SELECT character_name FROM {table_name} WHERE user_id = {userID} AND guild_id = {guildID}')
-#     char_result = cur.fetchall()
-
-#     cur.close()
-#     cxn.close()
-
-#     if char_result == []:
-#         return None
-#     else:
-#         return [name[0] for name in char_result]
-
-
-# def db_select(userID, guildID, column_names, char_name=False, table_name=default_table):
-#     '''Look up values in the database for one user or one character for one user.'''
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     if char_name == False:
-#         cur.execute(f"SELECT {column_names[0]} FROM {table_name} WHERE user_id={userID} and guild_id={guildID}")
-#     elif char_name != False:
-#         cur.execute(f"SELECT {column_names[0]} FROM {table_name} WHERE user_id={userID} and guild_id={guildID} and character_name='{char_name}'")
-
-#     result = cur.fetchone()
-#     cur.close()
-#     cxn.close()
-#     return result
-
-
-# def db_select_all(guildID, column_names, table_name=default_table):
-#     '''Look up values in the database, and returns results for all users in that guild.'''
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     cur.execute(f"SELECT {column_names[0]} FROM {table_name} WHERE guild_id={guildID}")
-#     results = cur.fetchall()
-
-#     cur.close()
-#     cxn.close()
-#     return results
-
-
-# def db_select_characters(userID, guildID, table_name=default_table):
-#     '''List all the characters belonging to the user.'''
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     cur.execute(f"SELECT character_name FROM {table_name} WHERE guild_id={guildID} and user_id={userID}")
-#     results = cur.fetchall()
-
-#     cur.close()
-#     cxn.close()
-#     return results
-
-
-# def db_update(userID, guildID, values, column_names, column_Qs, char_name=False, table_name=default_table):
-#     '''Update values in the database.
-#     \n`column_names` and `column_Qs` need to be pre-formatted as strings.'''
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     if char_name == False:
-#         sql = f"""UPDATE {table_name}
-#                     SET {column_Qs}
-#                     WHERE user_id = {userID} and guild_id = {guildID}
-#                 RETURNING {column_names[0]} as new_stat_vals"""
-
-#     elif char_name != False:
-#         sql = f"""UPDATE {table_name}
-#                     SET {column_Qs}
-#                     WHERE user_id = {userID} and guild_id = {guildID} and character_name = '{char_name}'
-#                 RETURNING {column_names[0]} as new_stat_vals"""
-#     val = values
-#     cur.execute(sql,val)
-#     result = cur.fetchone()
-
-#     cxn.commit()
-#     cur.close()
-#     cxn.close()
-#     return result
-
-
-# def check_table_exists(table_name):
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     cur.execute(f"SELECT count(name) FROM sqlite_master WHERE type='table' AND name = '{table_name}'")
-#     result = cur.fetchone()
-
-#     cur.close()
-#     cxn.close()
-#     if result[0] == 1:
-#         return True
-#     elif result[0] == 0:
-#         return False
-
-
-# def db_delete(column_name, column_Qs, values, guildID=False, table_name=default_table):
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-
-#     if guildID == False:
-#         sql = f"DELETE from {table_name} WHERE {column_name} IN ({column_Qs}) RETURNING *"
-
-#     elif guildID != False:
-#         sql = f"DELETE from {table_name} WHERE guild_id={guildID} and {column_name} IN ({column_Qs}) RETURNING *"
-
-#     cur.execute(sql,values)
-#     results = cur.fetchall()
-
-#     n = 0
-#     print()
-#     for res in results:
-#         n=n+1
-#         print(f"Contents of deleted entry {n} of {len(results)}:\n{res}\n")
-
-#     cxn.commit()
-#     cur.close()
-#     cxn.close()
-#     return results
-
-
-# def delete_table(table_name):
-#     cxn = sqlite3.connect(DB_PATH)
-#     cur = cxn.cursor()
-#     cur.execute(f"DROP TABLE IF EXISTS '{table_name}'")
-#     cxn.commit()
-#     cur.close()
-#     cxn.close()
-
-#### ----------------------------------------------------------
 
 def fregister_prompt(raw_numbers):
     '''Format numbers from a prompt to register player and enter values for the five basic stats.'''
@@ -248,7 +116,7 @@ def _register(user_name, user_display_name, userID, guildID, rawinput, char_name
         return columns, result[4:]
 
 
-### If you have more than one profile, it will return the first one by rowid
+# If you have more than one profile, it will return the first one by rowid. So I might want to change that?
 def search(userID, guildID, rawinput, char_name=False, all_columns=False, table_name=default_table):
     '''Search for stats.
     \n`search_all` return results for all stats'''
@@ -307,10 +175,13 @@ def _update(userID, guildID, rawinput, char_name=False):
         return column_names, result#, before_result
 
     
-def _reset(userID, guildID):
+# TODO: make it work with character names
+# TODO: (maybe) make it integrate with a "guild settings" table in the database for what values to use for the defaults
+def _reset(userID, guildID, char_name=False):
     '''
     Reset stats to a nice baseline.
     Hunger = 2, Stains and Superficial/Aggravated Damage = 0, Current Willpower = Total Willpower
+    Resetting a character by name to be implemented in future.
     '''
     stats = db_select(userID, guildID, ('hunger,humanity,stains,current_willpower,total_willpower,superficial_damage,aggravated_damage,health',))
     before_stats = [0 if stat is None else stat for stat in list(stats)]
@@ -330,8 +201,9 @@ def _reset(userID, guildID):
         return 'Something went wrong'
 
 
+# TODO: make it work with character names. But make sure that it's safe from SQLite injection!
 def _increment(userID, guildID, rawinput, char_name=False, table_name=default_table):
-    '''Under construction.'''
+    '''Under construction. Character name has not been implemented at all at this time.'''
     listified_input = stat_names_listifier(rawinput)
 
     if listified_input == 'Invalid' or listified_input[0] == 'Invalid':
@@ -364,7 +236,9 @@ def _increment(userID, guildID, rawinput, char_name=False, table_name=default_ta
             return (result[0] - increment), result[0], column_to_text(stat_column)[0]
 
 
-def _delete_user(userID, guildID, confirmation):
+# TODO: make it work with character names
+def _delete_user(userID, guildID, confirmation, char_name=False):
+    '''Delete a user from the database. Currently deletes a user entirely; in future I hope to add functionality so you can delete by character name.'''
     if confirmation.lower() != 'yes':
         return "Cancelled, user has not been deleted."
         
@@ -379,3 +253,109 @@ def _delete_user(userID, guildID, confirmation):
             return f'User {result[0]} successfully deleted'
         else:
             return 'Something went wrong'
+
+
+# TODO: make it work with character names
+def _remorse(userID, guildID, user_display_name, char_name=False):
+    '''Under construction'''
+    my_result = query_user(userID, guildID)
+    if my_result is None:
+        return False, """Player is not registered in the database.
+Use `.set humanity x, stains y` (replacing x and y with the appropriate values) to register and set your stats, then try again."""
+
+    elif my_result is not None:
+        stats = search(userID, guildID, ('humanity,', 'stains'))
+        hum = stats[1][0]
+        stain = stats[1][1]
+
+        if stain == 0 or stain == None:
+            # I don't love the look of this message, so I want to change it at some point
+            return False, f"**Auto-success**: *{user_display_name}* has zero stains.\n\nIf this is a mistake, use `.set stain x` to set your stains, then try again."
+        else:
+            if hum == 0 or hum == None:
+                return False, "Player does not have their humanity stat set!\nUse `.set humanity x` to set your humanity, then try again."
+
+            else:
+                error_msg = False
+
+                empty_dots = 10 - hum - stain
+                if empty_dots > 0:
+                    dice = empty_dots
+
+                elif empty_dots <= 0:
+                    dice = 1
+                    # msg = f"{user_display_name} had more Stains than empty boxes on the Humanity track. Number of dice for the remorse roll is 1."
+
+                rolls = raw_results(dice)
+                stringified_rolls = ', '.join(f'{item}' for item in rolls)
+
+                wins = len([i for i in rolls if i >= 6])
+
+                if wins > 0:
+                    new_stain = _update(userID, guildID, ('stains', '0'))
+                    remorse_msg = f"{user_display_name} has suffered enough guilt, shame, or regret to retain their current Humanity. All Stains have been removed."
+
+                else:
+                    new_hum_result = _increment(userID, guildID, ('humanity', '-1'))
+                    if new_hum_result == 'Invalid':
+                        error_msg = "Something went wrong. Unable to change humanity stat."
+                    elif new_hum_result is None:
+                        error_msg = "Something went REALLY wrong. Unable to change humanity stat."
+
+                    else:
+                        old_hum = int(new_hum_result[0])
+                        new_hum = int(new_hum_result[1])
+
+                        if new_hum == old_hum -1:
+                            new_stain = _update(userID, guildID, ('stains', '0'))
+                            remorse_msg = f"The Beast has won. {user_display_name} justifies their actions to themselves, and loses a part of their remaining Humanity as a result. All Stains have been removed."
+                        else:
+                            error_msg = "Something went wrong with changing the humanity stat. Please get the bot owner to look into it."
+
+                if error_msg is False:
+                    msg = remorse_msg
+                else:
+                    msg = f"{remorse_msg}\n\* {error_msg}"
+
+                # I just realized I probably want to include New Humanity in the results if the person fails their remorse check
+                final_msg = f"Remorse Roll for {user_display_name}\nCurrent Humanity: {hum}\nStains: {stain}\nDice Results: {stringified_rolls}\nResults: {msg}"
+                return True, final_msg
+
+
+# TODO: make it work with character names
+# def degen_chk(userID, guildID, char_name=False):
+def degeneration_check(userID, guildID, char_name=False):
+    '''
+    Under construction
+    Assumes that query_user has already been used to establish if a character/user is in the database
+    '''
+    print("\n----- Inside degeneration_check")
+    stats = search(userID, guildID, ('humanity,', 'stains'))
+    hum = stats[1][0]
+    stain = stats[1][1]
+
+    if stain == 0 or stain == None:
+        return False, "Player has no stains. Degeneration does not apply"
+    else:
+        if hum == 0 or hum == None:
+            return False, """Player does not have their humanity stat set!\nUse `.set humanity x` set your humanity, then try again."""
+
+        empty_dots = 10 - hum
+
+        if empty_dots >= stain:
+            print("Passed degeneration check\nEnd degeneration check ------\n")
+            return False
+        elif empty_dots < stain:
+            # maybe do more paraphrasing and less direct quoting? Or maybe use quotation marks to indicate that I am quoting?
+            msg = """Degeneration, page 239.
+
+The character becomes Impaired, overcome with regret. This causes the following:
+- They take a two-dice penalty to all pools.
+- They take 1 point of Aggravated Willpower damage for each Stain that could not fit in the empty boxes of their Humanity track.
+- The are incapable of further intentional Tenet violations, and if forced to commit one, they must test for terror frenzy (Difficulty 4).
+
+The character remains Impaired until the end of the session, when Remorse is tested.
+The character can also choose to snap out of it by voluntarily losing a point of Humanity, wiping away the Stains as they rationalize their actions and accept what they’ve become."""
+
+            print("Failed degeneration check\nEnd degeneration check ------\n")
+            return True, msg

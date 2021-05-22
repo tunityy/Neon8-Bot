@@ -11,26 +11,37 @@ def column_to_text(column_name):
 
 def stat_name_ifs(stat):
     st = str(stat).lower()
-    column_name = ['hunger', 'humanity', 'stains', 'current_willpower', 'total_willpower', 'superficial_damage', 'aggravated_damage', 'health']
+    st = st.replace(' ', '')
+    st = st.replace('_', '')
+    # column_name = ['hunger', 'humanity', 'stains', 'current_willpower', 'total_willpower', 'superficial_damage', 'aggravated_damage', 'health']
+    column_name = ['hunger', 'humanity', 'stains', 'health']
 
     if st in column_name:
         return st
     else:
         # some of these include common or possible typos and misspellings
-        hung_synonyms = ['current_hunger', 'current hunger', 'currenthunger', 'hung', 'hungry', 'hunger dice', 'hung dice', 'hungerdice',
-                         'hungdice', 'hd', 'bp', 'blood pool', 'blood dice', 'bd',
-                         'hugn', 'hugner', 'bloop', 'bloop pool']
-        hum_synonyms = ['hum', 'huemanatee', 'hue manatee', 'humane', 'human']
+        hung_synonyms = ['currenthunger', 'currenthung', 'hung', 'hun', 'hungry', 'hungerdice', 'hungdice',
+                         'hd', 'bp', 'bloodpool', 'blooddice', 'bd',
+                         'hugn', 'hugner', 'hungre', 'curenthunger', 'curenthung', 'bloop', 'blooppool', 'bloopool']
+
+        hum_synonyms = ['hum', 'huemanatee', 'humane', 'human', 'humanty', 'humanit', 'humantiy', 'humanaty']
+
         stains_synonyms = ['stain', 'stian', 'st', 'stians', 'stans']
-        cwp_synonyms = ['current willpower', 'willpower', 'wp', 'currentwillpower', 'currentwp',
-                        'will', 'current will', 'current wp', 'cwill', 'c will', 'c wp', 'cwp', 'cw', 'c w']
-        twp_synonyms = ['total willpower', 'totalwillpower', 'total wp', 'totalwp', 'twp', 't wp', 'total', 'tot',
-                        'totalwill', 'total will', 'willpower total', 'wp total', 'will total', 'wptotal', 'willtotal', 'twill', 'tw', 't will']
-        spr_dmg_synonyms = ['superficial', 'superficial dmg', 'superficialdmg', 'sdmg', 'sdamage', 's damage', 'sdmg', 'super']
-        agg_dmg_synonyms = ['agg', 'aggravated', 'aggr', 'agg dmg', 'aggdmg', 'aggr dmg', 'aggrdmg', 'aggravateddmg', 'aggravated dmg',
-                            'aggravated damage', 'admg', 'adamage', 'a dmg', 'a damage', 'aggravateddamage',
-                            'aggrivated', 'aggrivated damage', 'aggrevated', 'aggrevated damage', 'aggrevated dmg', 'aggrivated dmg']
-        health_synonyms = ['hp', 'hitpoints', 'hit points', 'health bar', 'healthbar']
+
+        cwp_synonyms = ['currentwillpower', 'willpower', 'wp', 'currentwp', 'will', 'currentwill', 'currentwp', 'cwill', 'cwp', 'cw', 'willp', 'currentwillp', 'cwillp',
+                        'wilpower', 'curentwillpower', 'current', 'curentwill', 'wil', 'currentwilpower', 'curentwilpower', 'wpwr', 'willpwr', 'wllpwr', 'wlpwr']
+
+        twp_synonyms = ['totalwillpower', 'totalwp', 'twp', 'total', 'tot', 'totalwill', 'willpowertotal', 'wptotal', 'willtotal', 'twill', 'tw', 'twillp', 'twillpower',
+                        'totalwilpower', 'totalwil', 'tote', 'totlewillpower', 'totlwillpower', 'totwill', 't', 'totwil', 'totwp', 'to', 'twil']
+
+        spr_dmg_synonyms = ['superficialdamage', 'superficial', 'superficialdmg', 'sdmg', 'sdamage', 'sdmg', 'super', 'superdmg',
+                            'supre', 'superficaldamage', 'superficaldmg', 'superfical', 'superfishul', 'superfishuldamage', 'superfishuldmg']
+
+        agg_dmg_synonyms = ['aggravateddamage', 'agg', 'aggravated', 'aggr', 'aggdmg', 'aggrdmg', 'aggravateddmg', 'aggra', 'aggdamage', 'admg', 'adamage',
+                            'aggro', 'aggrivated', 'aggrivateddamage', 'aggrivateddmg', 'aggrevated', 'aggrevateddamage', 'aggrevateddmg', 'aggrovated', 'aggrovateddamage', 'aggrovateddmg', 'aggrovateddmg']
+
+        health_synonyms = ['hp', 'hitpoints', 'healthpoints', 'healthbar', 'life', 'heal'
+                           'heath', 'healh', 'helth']
 
         if st in hung_synonyms:
             return 'hunger'

@@ -2,8 +2,18 @@
 *A discord bot I'm attempting to make to do some useful things for playing Vampire the Masquerade 5e.*
 
 *I literally have no idea what I'm doing, so my code is a mess. Sorry. :)*
-&nbsp;  
-## Things That I'm Using
+
+## Table of Contents:
+- [Requirements](#requirements)
+- [Features](#features)
+  * [Rolls dice](#rolls-dice)
+  * [Takes notes](#takes-notes)
+  * [Some silliness](#some-silliness)
+- [Changes in version 0.0.4](#changes-in-version-004)
+- [Future](#future)
+- [Documentation](#documentation)
+
+## Requirements
 * **Python 3.5.3 or higher** is required, at minimum. Probably higher though, I'm not really sure. But discord.py requires Python 3.5.3 I am making this bot in [Python 3.9.2](https://www.python.org/downloads/release/python-392/), the most recent stable version at this time.
 
 * **[Discord.py](https://github.com/Rapptz/discord.py) API wrapper**. I was originally using v 1.6.0, but updated to 1.7.1.
@@ -14,7 +24,7 @@
 
 * **[Pytz](https://pypi.org/project/pytz/)** for local timezone conversion. I'm using version 2021.1.
 &nbsp;  
-## What does it do?
+## Features
 
 ### Rolls dice
 ![Embed and plain text rolls](https://user-images.githubusercontent.com/80991664/118560961-8d782180-b727-11eb-83ca-59b1c75144a4.png)
@@ -24,6 +34,13 @@
 * Can add a comment of any length
 * Shows the success condition of the roll (e.g. `Success` and `Bestial Failure`), followed by number of successes
 * Can use "y" or "yes" in place of the number of hunger dice, to use the hunger value saved in the database for that user
+
+### Player information database
+
+* You can register yourself into the database and save some of your basic stats, for reference and to integrate with some of the rolls
+* You can see a list of one or more of your dynamic stats: hunger, humanity, stains, current willpower, total willpower, superficial damage, aggravated damage, and health
+* Can also look up someone else's stats, or the stats of all players registered to the server
+
 
 ### Takes Notes
 ![Note-taking](https://user-images.githubusercontent.com/80991664/118562423-e47ef600-b729-11eb-8895-c2ad616ed9cc.png)
@@ -40,7 +57,15 @@
 * Damn the Tremere!
 
 
-## Changes in version 0.0.4
+## Changes
+
+### Version 0.0.5
+* I added a wiki!
+* Grouped all the note commands together as a command group, because it's just logical
+* Added more synonyms for stat names, and made it so spaces and underscores in the names are ignored by the bot
+* Cleaned up some silly mistakes I made
+
+### Version 0.0.4
 (Some of these are from version 0.0.3 but I never wrote them down. Oops)
 
 * Integrated with the database for rolling dice, so you can use your hunger stat saved in the database!
@@ -54,7 +79,12 @@
 
 * Working on making specific commands for things like remorse rolls, rouse checks, and frenzy tests, which automatically adjust stats if you fail (if applicable)
 * An info command to bring up rules that we commonly have to look up. E.g. `.info degeneration` would show the page number and a summary of how degeneration works
+* Maybe make a guild_settings table and include things like what your reset values are, whether character names are enabled, and more
 * Full-on character sheets perhaps? We shall see...
 
 &nbsp;  
 ![dimi sheet](https://user-images.githubusercontent.com/80991664/118564896-6e30c280-b72e-11eb-9530-f30dd5fafdcf.png)
+
+
+## Documentation
+* 

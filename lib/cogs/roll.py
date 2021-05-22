@@ -25,7 +25,7 @@ class Dice(Cog):
     ### COMMANDS ###
 
 
-    @command(aliases=['basic', 'lite roll'], brief='Roll some dice! Total, Hunger, Successes Needed, Comments', description = """
+    @command(aliases=['basic', 'br'], brief='Roll some dice! Total, Hunger, Successes Needed, Comments', description = """
     -------------------------
      FORMAT FOR ROLLING DICE
     -------------------------
@@ -66,7 +66,7 @@ class Dice(Cog):
 **Hunger Dice**:  {rolled_stats[1]} {rolled_stats[4]} {comment_final}""")
 
 
-    @command(aliases=['rolldice', 'dice', 'v5', 'm5', 'v5roll', 'm5roll', 'r', 'roll5e', 'roll5'], brief="Roll some dice! Total, Hunger, Successes Needed, Comments")
+    @command(aliases=['r', 'v5', 'm5', 'v5roll', 'm5roll', 'roll5e', 'rollv5'], brief="Roll some dice! Total, Hunger, Successes Needed, Comments")
     async def roll(self, ctx, dice_tot: int, dice_hunger, success_req: int, *args):
         res = dice_checks(dice_tot, dice_hunger, ctx.author.id, ctx.author.guild.id, ctx.author, ctx.author.display_name)
         if res[0] == False:
@@ -132,7 +132,7 @@ class Dice(Cog):
 
 
 
-    @command(aliases=['randroll', 'quantum roll', 'qr', 'quantumroll', 'quantum', 'truerandom', 'randomroll'], brief='Roll some dice! Total, Hunger, Successes Needed, Comments', description = """
+    @command(aliases=['randroll', 'qr', 'quantum', 'random'], brief='Roll some dice! Total, Hunger, Successes Needed, Comments', description = """
     -------------------------
      FORMAT FOR ROLLING DICE
     -------------------------

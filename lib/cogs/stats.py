@@ -1,3 +1,8 @@
+# from lib.db.db import stats_lookup, stats_lookup_list_all, name_lookup
+# from lib.db.db import stat_name_ifs, column_to_text, stat_names_listifier
+# from lib.db.db import update_stats, basic_listifier, update_character_name
+# from lib.db.db import check_table_exists, increment, clear_stats
+
 from lib.db.db import fregister_prompt, fregister_results, fsearch
 from lib.db.db import query_user, _register, search, _list_all, _update, _increment, _reset, _delete_user
 
@@ -49,7 +54,7 @@ class Stats(Cog):
 # No character stats have been added yet. Please use `.update` or `.set` to enter your stats.""")
 
 
-    @command(aliases = ['register', 'newplayer', 'reg', 'registernew', 'regnew'])
+    @command(name='register', aliases = ['reg', 'regnew', 'new'])
     async def register_new(self, ctx, *args):
         my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is not None:
@@ -74,7 +79,7 @@ No character stats have been added yet. Please use `.update` or `.set` to enter 
 
     ## TODO: make some kind of error if it comes back as invalid
     @command(aliases=['regfull'])
-    async def register_prompt(self, ctx):
+    async def register_full(self, ctx):
         my_result = query_user(ctx.author.id, ctx.guild.id)
         if my_result is not None:
             await ctx.send("Player is already registered in database.")
@@ -96,7 +101,7 @@ No character stats have been added yet. Please use `.update` or `.set` to enter 
 
     ### Lookup / Show / List ###
 
-    @command()
+    @command(aliases=['see', 'view'])
     async def show(self, ctx, target: Greedy[Member], *args):
         if target == []:
             userID = ctx.author.id
@@ -130,7 +135,7 @@ No character stats have been added yet. Please use `.update` or `.set` to enter 
                 await ctx.send(embed=embed)
 
 
-    @command(aliases=['showall', 'listall', 'list', 'list_all'])
+    @command(aliases=['showall', 'listall', 'list_all', 'list', 'seeall'])
     async def show_all(self, ctx, *args):
         res = _list_all(ctx.author.guild.id, args)
         if res == 'Invalid':
@@ -162,7 +167,7 @@ No character stats have been added yet. Please use `.update` or `.set` to enter 
 
     # ----------------------------------------------------------
 
-    @command(aliases=['set'])
+    @command(aliases=['set', 'change'])
     async def update(self, ctx, *args):
         my_result = query_user(ctx.author.id, ctx.guild.id)
         invalid_msg = """Uh oh! I couldn't find that stat. Try one or more of the following:
@@ -199,7 +204,7 @@ No character stats have been added yet. Please use `.update` or `.set` to enter 
                 # TODO: Add a degeneration check
 
 
-    @command(aliases=['set_other', 'so'])
+    @command(aliases=['updateother', 'set_other', 'setother', 'so'])
     async def update_other(self, ctx, target: Greedy[Member], *args):
         if target == []:
             await ctx.send("Error: No player was mentioned.")
@@ -264,7 +269,7 @@ No character stats have been added yet. Please use `.update` or `.set` to enter 
 
     # This command makes me nervous, even though I know that it's set up so only two people can use it
     @is_st_or_owner()
-    @command(aliases = ['del', 'delete'])
+    @command(aliases = ['rem', 'del', 'delete'])
     async def remove(self, ctx, target: Greedy[Member]):
         if target == []:
             userID = ctx.author.id
@@ -300,7 +305,7 @@ Please confirm by typing "yes". Type anything else to cancel.''')
     # ----------------------------------------------------------
 
 
-    @command(aliases=['stains', 'stian'])
+    @command(aliases=['stains', 'stian', 'st'])
     async def stain(self, ctx, number=1):
 
         res = _increment(ctx.author.id, ctx.author.guild.id, ('stains', str(number)))
@@ -317,6 +322,114 @@ Please confirm by typing "yes". Type anything else to cancel.''')
                 await ctx.send(f"Increased {res[2]} from {res[0]} to {res[1]}.")
             # TODO: maybe make the output look a little nicer? Super low priority though
             # TODO: Add a degeneration check
+
+
+    # ----------------------------------------------------------
+
+#     ### CLEAR COMMAND GROUP ###
+
+#     @commands.group(aliases = ['wipe'], invoke_without_command=True)
+#     async def clear(self, ctx):
+#         await ctx.send('''
+# Available Clear Commands:
+# clear my <stat>
+# clear one <stat>
+# clear all
+# clear table
+# ''')
+
+
+#     @clear.command(name='my', aliases=['me'])
+#     async def clear_my(self, ctx, *args):
+#         # clears the stat for all your characters, or just one
+#         my_result = query_user(ctx.author.id, ctx.guild.id)
+#         if my_result is None:
+#             await ctx.send("Player is not registered in database!")
+
+#         elif my_result is not None and len(my_result) > 1:
+#             await ctx.send(f"""Woops! It looks like you have more than one profile registered. You'll have to be more specific. 
+# *(Note: this feature is under construction, and is not currently available.)*""")
+#             # Eventually I'll have to modify this so it works for when you have more than one character...
+
+#         else:
+#             if args != () and stat_names_listifier(args) == 'Invalid':
+#                 await ctx.send("""Error: invalid stat or stats. Please try one or more of the following:
+# `hunger, humanity, stains, current willpower, total willpower`""")
+
+#             else:
+#                 if args == ():
+#                     result = clear_stats(ctx.author.id, ctx.author.guild.id, args, True)
+#                     cleared_msg = f"{ctx.author.display_name}'s stats have all been reset to 0."
+#                 else:
+#                     stats = stat_names_listifier(args)
+#                     print(f"Stats: {stats}/, type: {type(stats)}/, len: {len(stats)}")
+#                     result = clear_stats(ctx.author.id, ctx.author.guild.id, args)
+#                     if type(stats) == str:
+#                         cleared_msg = f"{ctx.author.display_name}'s {column_to_text(stats)} has been reset to 0."
+#                     elif type(stats) == list and len(stats) == 2:
+#                         column_list = [column_to_text(thing) for thing in stats]
+#                         cleared_msg = f"{ctx.author.display_name}'s {column_list[0]} and {column_list[1]} have been reset to 0."
+#                     elif type(stats) == list and len(stats) > 2:
+#                         beginning_results = ', '.join(column_to_text(stats)[:-1])
+#                         last_result = column_to_text(stats)[-1]
+#                         cleared_msg == f"{ctx.author.display_name}'s {beginning_results}, and {last_result} have been reset to 0."
+#                 print(result)
+#                 if result == 'Cleared':
+#                     await ctx.send(cleared_msg)
+#                 else:
+#                     await ctx.send("Oops, something went wrong.")
+
+
+#     @clear.command(name='one', aliases=['other'])
+#     async def clear_one(self, ctx, member: Member, *args):
+#         search_res = query_user(ctx.author.id, ctx.guild.id)
+#         if search_res is None:
+#             await ctx.send(f"{member.display_name} could not be found in the database. :(")
+
+#         elif search_res is not None and len(search_res) > 1:
+#             await ctx.send(f"""Woops! It looks like there's more than one profile registered to that player. You'll have to be more specific. 
+# *(Note: this feature is under construction, and is not currently available.)*""")
+#             # Eventually I'll have to modify this so it works for when you have more than one character...            
+
+#         else:
+#             if args != () and stat_names_listifier(args) == 'Invalid':
+#                 await ctx.send("""Uh oh! I couldn't find that stat. Try one or more of the following, separated by commas:
+# `hunger, humanity, stains, current willpower, total willpower.`""")
+
+#             else:
+#                 if args == ():
+#                     result = clear_stats(member.id, ctx.author.guild.id, args, True)
+#                     cleared_msg = f"{member.mention}'s stats have all been reset to 0."
+#                 else:
+#                     stats = stat_names_listifier(args)
+#                     print(f"Stats: {stats}/, type: {type(stats)}/, len: {len(stats)}")
+#                     result = clear_stats(member.id, ctx.author.guild.id, args)
+#                     if type(stats) == str:
+#                         cleared_msg = f"{member.mention}'s {column_to_text(stats)} has been reset to 0."
+#                     elif type(stats) == list and len(stats) == 2:
+#                         column_list = [column_to_text(thing) for thing in stats]
+#                         cleared_msg = f"{member.mention}'s {column_list[0]} and {column_list[1]} have been reset to 0."
+#                     elif type(stats) == list and len(stats) > 2:
+#                         beginning_results = ', '.join(column_to_text(stats)[:-1])
+#                         last_result = column_to_text(stats)[-1]
+#                         cleared_msg == f"{member.mention}'s {beginning_results}, and {last_result} have been reset to 0."
+#                 print(result)
+#                 if result == 'Cleared':
+#                     await ctx.send(cleared_msg)
+#                 else:
+#                     await ctx.send("Oops, something went wrong.")
+
+
+#     @clear.command(name='all', aliases=['everyone'])
+#     async def clear_all(self, ctx):
+#         await ctx.send("This is a generic message, to use as an example.")
+#         # clears the stat for all players in guild
+
+
+#     @clear.command(name='table', aliases=['clean_slate'])
+#     async def clear_table(self, ctx):
+#         await ctx.send("This is a generic message, to use as an example.")
+#         # deletes all rows in that table. There will be a default for dynamic_stats, but you can write a table name to make the command more useful in future
 
 
 #     # ----------------------------------------------------------

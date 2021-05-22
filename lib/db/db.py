@@ -5,8 +5,8 @@ from datetime import datetime, timezone
 from math import ceil
 
 from . db_general import query_user, db_insert, db_select, db_select_all, db_select_characters, db_update, db_update_basic, db_delete, check_table_exists
-from . small_functions import column_to_text, basic_listifier, timestamp_mountain, extra_spacing
-from . format_column_names import stat_name_ifs, stat_names_listifier
+from . small_functions import basic_listifier, timestamp_mountain, extra_spacing
+from . format_column_names import stat_name_ifs, stat_names_listifier, column_to_text
 
 # ### These are going to be decommissioned as I edit and streamline the functions and commands associated with them
 # from . register_lookup import stats_lookup, stats_lookup_list_all, name_lookup

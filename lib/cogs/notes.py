@@ -19,15 +19,23 @@ class Notes(Cog):
 
     ### COMMANDS ###
 
-    @command(aliases=['notehelp', 'help_note', 'helpnote', 'noteshelp', 'notes_help', 'nhelp'])
-    async def note_help(self, ctx):
-        await ctx.send("""Write and read notes, show a list of all notes, and delete or edit notes. Available commands:
-`.write <note_title> <note contents>`\n`.read <note_title>`\n`.notes`\n`.delnote <note_title>`\n`.editnote <note_title>` (Under construction)""")
+    @commands.group(invoke_without_command=True, aliases=['notes'])
+    async def note(self, ctx):
+        await ctx.send("""Write and read notes, show a list of all notes, and edit or delete notes. Available commands:
+`.note write <note_title> <note contents>`\n`.note read <note_title>`\n`.note list`\n`.note edit <note_title>`\n`.note delete <note_title>`""")
+# TODO: Make this nicer
+
+
+    @note.command(name='help', aliases=['info'])
+    async def help_note(self, ctx):
+        await ctx.send("""Write and read notes, show a list of all notes, and edit or delete notes. Available commands:
+`.note write <note_title> <note contents>`\n`.note read <note_title>`\n`.note list`\n`.note edit <note_title>`\n`.note delete <note_title>`""")
+# TODO: Make this nicer
 
 
     # # I'm sure there's a better name for this, but whatever. It works for now.
-    # @command(aliases=['writestatic', 'writeunchangeablenote', 'writeunchangeable', 'staticnote', 'static_note', 'write_edit_off'])
-    # async def write_static_note(self, ctx, note_title, *, args=None):
+    # @note.command(aliases=['uneditable', 'unchangeable', 'static', 'makestatic', 'locked', 'writelocked'])
+    # async def write_uneditable(self, ctx, note_title, *, args=None):
     #     if args is None:
     #         await ctx.send("Error: you can't write an empty note!")
     #     else:
@@ -40,8 +48,8 @@ class Notes(Cog):
     #             await ctx.send(f'''Note titled "{result}" has been saved.''')
 
 
-    @command(aliases=['write', 'write note', 'writenote', 'make note', 'makenote', 'note'])
-    async def write_note(self, ctx, note_title, *, args=None):
+    @note.command(aliases=['make', 'new'])
+    async def write(self, ctx, note_title, *, args=None):
         if args is None:
             await ctx.send("Error: you can't write an empty note!")
         else:
@@ -54,8 +62,8 @@ class Notes(Cog):
                 await ctx.send(f'''Note titled "{result}" has been saved.''')
 
 
-    @command(aliases=['read', 'see_note', 'seenote', 'readnote'])
-    async def read_note(self, ctx, note_title):
+    @note.command(aliases=['see', 'view', 'select'])
+    async def read(self, ctx, note_title):
         result = db_read_note(note_title, ctx.author.guild.id, True)
         if result is None:
             await ctx.send("That note doesn't exist.")
@@ -84,14 +92,14 @@ class Notes(Cog):
             await ctx.send(embed=embed)
 
 
-    @command(aliases=['listnotes', 'note_list', 'notelist', 'notes'])
+    @note.command(name="list", aliases=['all'])
     async def list_notes(self, ctx):
         result = flist_notes(ctx.author.guild.id, True, 5)
         if result is None:
-            await ctx.send("There are no notes to view. Why not try writing one of your own? Use the command `.write (noteTitle) (note contents)` to write a note.")
+            await ctx.send("There are no notes to view. Why not try writing one of your own? Use the command `.note write (noteTitle) (note contents)` to write a note.")
         else:
             embed = Embed(title="Here are the notes available to read:",
-                        description='Type `.read (note title)` without brackets to read that note.',
+                        description='Type `.note read (note title)` without brackets to read that note.',
                         colour=discord.Colour(0x9f6231),
                         timestamp=datetime.utcnow())
             embed.set_footer(text=f"Requested by:  {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
@@ -102,7 +110,8 @@ class Notes(Cog):
             await ctx.send(embed=embed)
 
 
-    @command(aliases=['delnote', 'deletenote', 'delnotes', 'deletenotes', 'delete_notes'])
+    # TODO: 
+    @note.command(name='delete', aliases=['remove', 'del'])
     async def delete_note(self, ctx, *, note_title):
         await ctx.send(f'''
 This command will **permanently delete** "{note_title}" from the database. The contents cannot be recovered once this action has been completed.\n
@@ -116,8 +125,8 @@ Please confirm by typing "yes". Type anything else to cancel.
         await ctx.send(result)
 
 
-    @command(aliases=['updatenote', 'change_note', 'changenote', 'modify_note', 'modifynote', 'editnote', 'edit_note'])
-    async def update_note(self, ctx, note_title):
+    @note.command(name='edit', aliases=['update', 'change', 'modify'])
+    async def edit_note(self, ctx, note_title):
         ### Plain text version ###
         # check_note = edit_note_check(note_title, ctx.author.guild.id, ctx.author.id, False, False)
         # if check_note[0] == 'Problem':
@@ -128,7 +137,7 @@ Please confirm by typing "yes". Type anything else to cancel.
         check_note = edit_note_check(note_title, ctx.author.guild.id, ctx.author.id)
         if check_note[0] == 'Problem':
             await ctx.send(check_note[1])
-        
+
         else:
             embed = Embed(title=check_note[0],
                         description=check_note[1],
@@ -146,6 +155,7 @@ Please confirm by typing "yes". Type anything else to cancel.
                 return msg.author == ctx.author and msg.channel == ctx.channel
             msg = await self.client.wait_for("message", check=check)
             note_content = msg.content
+            # if note_content.lower() in ['no', 'cancel', 'n'] or note_content[0] == '.': # This might work too? And be easier to read.
             if note_content.lower() == 'no' or note_content.lower() == 'cancel' or note_content.lower() == 'n' or note_content[0] == '.':
                 await ctx.send("Edit cancelled, note is unchanged.")
             else:
@@ -153,7 +163,7 @@ Please confirm by typing "yes". Type anything else to cancel.
                 await ctx.send(result)
 
 
-    # @command(aliases=['renamenote', 'changenotename', 'change_note_name', 'changenamenote', 'change_name_note'])
+    # @note.command(names='rename')
     # async def rename_note(self, ctx, old_title, new_title):
     #     pass
 

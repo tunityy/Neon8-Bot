@@ -49,7 +49,7 @@ class Fun(Cog):
 
     ### COMMANDS ###
 
-    @command(aliases=['pc'])
+    @command(aliases=['peacocks'])
     async def peacock(self, ctx):
         peacock_pic = ['https://www.onegreenplanet.org/wp-content/uploads/2020/05/shutterstock_567926224-1536x1024.jpg',
         'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Peacock_Plumage.jpg/1280px-Peacock_Plumage.jpg',

@@ -12,6 +12,9 @@ lib/cogs/characters.py
 lib/cogs/test_cog.py
 lib/db/test.py
 
+lib/db/register_lookup.py
+lib/db/update.py
+
 lib/characters/
 
 *.old
